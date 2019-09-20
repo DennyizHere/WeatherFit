@@ -1,9 +1,8 @@
-import json
 import os
 import sys
 import urllib
-import json
 import requests
+import time
 
 def image_collector(subreddits):
     url = "https://www.reddit.com/r/"
@@ -26,8 +25,9 @@ def image_collector(subreddits):
 
             folder_location = item + "/"
             image_name = os.path.basename(post_url)
+            image_name = image_tag(subreddit['data']['children'][i]['data'])
             urllib.request.urlretrieve(post_url, folder_location + image_name)
-            print ("Downloading " + subreddit['data']['children'][i]['data']['title'] + " in r/" + item)
+            print ("Downloading " + subreddit['data']['children'][i]['data']['title'] + " in r/" + item + " as " + image_name)
 
 def initial(subreddit):
     url = "https://www.reddit.com/r/"
@@ -38,19 +38,29 @@ def initial(subreddit):
     posts = r.json()
 
     for i in range(len(posts['data']['children'])):
-        domain = posts['data']['children'][i]['data']['domain']
+        post = posts['data']['children'][i]['data']
+        image_tag(post)
+        domain = post['domain']
         if domain != "i.redd.it" and domain != "i.imgur.com" and domain != "m.imgur.com":
             continue
-        post_url = posts['data']['children'][i]['data']['url']
+        post_url = post['url']
 
         if "imgur" in post_url:
             if post_url[-4:] != ".jpg":
                 post_url = post_url + ".jpg"
 
         folder_location = subreddit + "/"
-        image_name = os.path.basename(post_url)
+        image_name = image_tag(post)
         urllib.request.urlretrieve(post_url, folder_location + image_name)
-        print("Downloading " + posts['data']['children'][i]['data']['title'] + " in r/" + subreddit)
+        print("Downloading " + post['title'] + " in r/" + subreddit + " as " + image_name)
+
+def image_tag(post):
+    when = time.strftime("%Y%m%d", time.gmtime(post["created_utc"]))
+    post_url = post['url']
+    base_filename = os.path.basename(post_url)
+    filename = "[" + when + "]" + base_filename
+
+    return filename
 
 def dir_check(subreddits):
     for item in subreddits:
@@ -60,13 +70,10 @@ def dir_check(subreddits):
             initial(item)
 
 def main():
-
     with open(os.path.join(sys.path[0], "subreddit_list.txt"), "r") as f:
         subreddits = f.read().splitlines()
 
     dir_check(subreddits)
-
-    print (subreddits)
     image_collector(subreddits)
 
 if __name__ == '__main__':
