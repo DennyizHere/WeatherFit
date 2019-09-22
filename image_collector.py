@@ -30,7 +30,7 @@ def image_collector(subreddit):
     #         urllib.request.urlretrieve(post_url, folder_location + image_name)
     #         print ("Downloading " + subreddit['data']['children'][i]['data']['title'] + " in r/" + item + " as " + image_name)
     url = "https://www.reddit.com/r/"
-    url_end = "/top/.json?t=year&count=20"
+    url_end = "/top/.json?t=week&count=20"
 
     final_url = url + subreddit + url_end
     r = requests.get(final_url, headers={'User-agent': 'your bot 0.1'})
