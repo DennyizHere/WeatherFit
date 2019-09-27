@@ -1,3 +1,20 @@
 {
-
+  "actions": [
+    {
+      "name": "MAIN",
+      "intent": {
+        "name": "actions.intent.MAIN"
+      },
+      "fulfillment": {
+        "conversationName": "weather-fit"
+      }
+    }
+  ],
+  "conversations": {
+    "weather-fit": {
+      "name": "weather-fit",
+      "url": "",
+      "fulfillmentApiVersion": 2
+    }
+  }
 }
